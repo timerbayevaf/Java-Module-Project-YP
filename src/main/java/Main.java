@@ -16,33 +16,54 @@ public class Main {
 
         Calculator calculator = new Calculator();
         do {
-            System.out.println("Введите название товара:");
-            String name = getString();
-            System.out.println("Введите стоимость товара в формате рубли.копейки (например, 10.45):");
-            double price = getDouble("Некорректное значение: Введите число в формате 10.45");
+            String name = getString("Введите название товара:");
+            double price = getDouble("Введите стоимость товара в формате рубли.копейки (например, 10.45):");
 
             calculator.addProduct(name, price);
+            scanner.nextLine();
 
-            System.out.println("Добавить еще один товар? (Введите 'завершить' для завершения)");
-        } while (calculator.promptForNextProduct(getString()));
+        } while (calculator.promptForNextProduct(getString("Добавить еще один товар? (Введите 'завершить' для завершения) или любой символ для добавления товаров")));
 
         calculator.displayProductsAndTotal(countPersons);
 
         scanner.close();
     }
 
-    public static String getString() {
-        return scanner.nextLine();
+    public static String getString(String message) {
+        String input;
+        while (true) {
+            System.out.println(message);
+            input = scanner.nextLine();
+            if (input.isBlank()) {
+                System.out.println("Некорректное значение: строка пуста или содержит только пробелы. Пожалуйста, введите что-нибудь еще:");
+            } else if (input.matches("\\d+")) {
+                System.out.println("Некорректное значение: не должно состоять только из цифр");
+            } else {
+                break;
+            }
+            scanner.nextLine();
+        }
+        return input;
     }
 
     public static double getDouble(String message) {
-        while (!scanner.hasNextDouble()) {
+        double value;
+        while (true) {
             System.out.println(message);
+            if (scanner.hasNextDouble()) {
+                value = scanner.nextDouble();
+                if (value > 0) {
+                    break;
+                } else {
+                    System.out.println("Некорректное значение: число не должно быть отрицательным.");
+                }
+            } else {
+                System.out.println("Некорректное значение: введенное значение не является числом.");
+            }
             scanner.nextLine();
         }
-        double value = scanner.nextDouble();
-        scanner.nextLine();
         return value;
+
     }
 
     public static int getInt(String message) {
